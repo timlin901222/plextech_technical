@@ -109,3 +109,6 @@ test/.pytest_cache
 test/archive
 test/output.json
 test/pytest_html_report.html
+
+# Build
+package-lock.json
