@@ -2,7 +2,7 @@
     This python module serves as a testing script to ensure 
     critical portions of the PlexTech Petstore works as intended!
 
-    Specification: https://app.swaggerhub.com/apis-docs/AkshatJain1/Petstore/2.0.0
+    Specification: https://app.swaggerhub.com/apis-docs/AkshatJain1/Petstore
 '''
 import pytest
 import requests

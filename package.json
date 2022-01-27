@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/AkshatJain1/plextech-technical-starter#readme",
   "dependencies": {
+    "ajv": "^8.9.0",
     "http": "*",
     "nodemon": "^2.0.15",
     "url": "^0.11.0"
