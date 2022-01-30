@@ -7,6 +7,23 @@ const pet_schema = {
     // TODO: Complete schema
         // - Utilize Pet Schema in spec
         // - Use Ajv JSON Type Definition: https://ajv.js.org/json-type-definition.html
+        properties: {
+            id: {type: "uint32"},
+            name: {type: "string"},
+            photoUrls: {
+                elements: {
+                    type: "string"
+                }
+            },
+            tags: {
+                elements: {
+                    type: "string"
+                }
+            },
+            status: { enum: ["available", "pending", "sold"]},
+            
+
+        },
 };
 
 const isValid = ajv.compile(pet_schema);
@@ -31,6 +48,12 @@ exports.createPet = function (pet) {
         return false;
     }
     // TODO: Consider edge case
+    const new_pet = data.find(
+        element => element.id === pet.id
+    )
+    if (new_pet !== undefined) {
+        return -1;
+    }
 
     data.push(pet);
     saveToFile();
@@ -43,23 +66,58 @@ exports.getPetById = function (id) {
         element => element.id === id
     );
     // TODO: Consider edge case
+    if (pet === undefined) {
+        return null;
+    }
 
     return pet;
 };
 
 // TODO: complete filter functions
-exports.getPetsByStatus = null;
-exports.getPetsByTags = null;
+exports.getPetsByStatus = function (status) {
+    let error = false;
+    const stats = pet_schema.properties.status.enum;
+    status.forEach(element => {
+        if (!stats.includes(element)) {
+            error = true;
+        }
+    });
+    if (error) {
+        return null;
+    }
+    return data.filter(element => status.includes(element.status));;
+};
+exports.getPetsByTags = function (tags) {
+    const result = data.filter(
+        element => element.tags.filter(
+            el => tags.includes(el)
+        ).length > 0
+    );
+    
+    if (result.length === 0) {
+        return null;
+    }
+    return result;
+};
 
 /* Executes a full replace with the input pet data. Returns true 
     if successful, otherwise false  */
 exports.updatePetById = function (pet) {
     // checks 'pet' according to Ajv schema you defined above
     if (!isValid(pet)) {
-        return false;
+        return -2;
+    }
+    // edge case where id doesn't exist
+    const checkPet = data.find(
+        element => element.id === pet.id
+    );
+    if (checkPet === undefined) {
+        return -1;
     }
 
-    // TODO: execute a full replace based on pet.id
+    exports.deletePet(pet.id);
+    exports.createPet(pet);
+    return 0;
 }
 
 /* Deletes Pet object as specified by 'id'. Returns true 
@@ -69,6 +127,10 @@ exports.deletePet = function (id) {
         element => element.id === id
     );
     // TODO: Consider edge case
+    
+    if (petIndex === -1) {
+        return false;
+    }
 
     data.splice(petIndex, 1);
     saveToFile();
